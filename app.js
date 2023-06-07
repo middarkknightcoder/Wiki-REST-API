@@ -1,5 +1,5 @@
 // Here we are creating a new REST full API wiki-api using the REST structure
-// REST : REpresentational State Transfer       1
+// REST : REpresentational State Transfer  
 //jshint esversion:6
 // Postman is created all type(get,post,delete,put,patch) of http request for the server to database comunication or Testing your own REST api using postman
 // Studio 3T is used for the store the database onl you need to connect your server to the Studio 3T using the url string
@@ -8,6 +8,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require('mongoose');
+// const _ = require("lodash");
 
 const app = express();
 
@@ -101,6 +102,73 @@ app.route("/articles/:articleTitle")
             .then(function (foundArticle) {
 
                 res.send(foundArticle);
+            })
+            .catch(function (err) {
+
+                res.send(err);
+            })
+    })
+
+    // Put request is update the entire document of the database 
+
+    .put(function (req, res) {
+
+        articles.findOneAndUpdate(
+
+            { title: req.params.articleTitle }, // condition
+            { title: req.body.title, content: req.body.content }, // update content
+            { overwrite: true })  // overwrite permision
+            .then(function () {
+
+                res.send("Sucessfully Updated Data using Put");
+            })
+            .catch(function (err) {
+
+                res.send(err);
+            })
+    })
+
+    // Patch request is update the specifiec document field and value or It is not a update the entire docunent
+
+    .patch(function (req, res) {
+
+        // articles.findOneAndUpdate(
+        //     { title: req.params.articleTitle },
+        //     { title: req.body.title },
+        //     { overwrite: true })
+        //     .then(function () {
+
+        //         res.send("Successfuly updated data using patch");
+        //     })
+        //     .catch(function (err) {
+
+        //         res.send(err);
+        //     })
+
+        ////// or//////
+
+        articles.findOneAndUpdate(
+            { title: req.params.articleTitle },
+            { $set: req.body }) // Here geting the all body object field and value
+            .then(function () {
+
+                res.send("Successfuly updated data using patch");
+            })
+            .catch(function (err) {
+
+                res.send(err);
+            })
+    })
+
+    // Delete request is used for the deleted a specific article into the database
+
+    .delete(function (req, res) {
+
+        articles.findOneAndDelete(
+            { title: req.params.articleTitle })
+            .then(function () {
+
+                res.send("SuccessFully Deleted particular article using Delete")
             })
             .catch(function (err) {
 
